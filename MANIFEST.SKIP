@@ -1,0 +1,5 @@
+# stolen from Devel::REPL
+^(?!script/|examples/|lib/|inc/|t/|Makefile.PL$|README$|MANIFEST$|Changes$|META.yml$)
+.svn/
+.git/
+.swp$
