@@ -1,9 +1,14 @@
 package MooseX::Traits::Pluggable;
+
+use namespace::autoclean;
 use Moose::Role;
-use Scalar::Util ();
+use Scalar::Util 'blessed';
+use List::MoreUtils 'uniq';
+use Carp;
+
 with 'MooseX::Traits' => { excludes => [qw/new_with_traits apply_traits/] };
 
-our $VERSION   = '0.01';
+our $VERSION   = '0.02';
 our $AUTHORITY = 'id:RKITOVER';
 
 # stolen from MX::Object::Pluggable
@@ -11,7 +16,19 @@ has _original_class_name => (
   is => 'ro',
   required => 1,
   isa => 'Str',
-  default => sub{ Scalar::Util::blessed($_[0]) },
+  default => sub { blessed $_[0] },
+);
+
+has _traits => (
+  is => 'ro',
+  isa => 'ArrayRef[Str]',
+  default => sub { [] },
+);
+
+has _resolved_traits => (
+  is => 'ro',
+  isa => 'ArrayRef[ClassName]',
+  default => sub { [] },
 );
 
 sub _find_trait {
@@ -23,6 +40,8 @@ sub _find_trait {
         my $full = "${ns}::${base}::${name}";
         return $full if eval { Class::MOP::load_class($full) };
     }
+
+    croak "Could not find a class for trait: $name";
 }
 
 sub _transform_trait {
@@ -67,7 +86,9 @@ sub new_with_traits {
 
     if (my $traits = delete $args{traits}) {
         if(@$traits){
+            $args{_traits} = $traits;
             $traits = [$class->_resolve_traits(@$traits)];
+            $args{_resolved_traits} = $traits;
 
             my $meta = $class->meta->create_anon_class(
                 superclasses => [ $class->meta->name ],
@@ -95,10 +116,17 @@ sub apply_traits {
     @traits = @$traits if ref $traits;
 
     if (@traits) {
-        @traits = $self->_resolve_traits(@traits);
+        my @resolved_traits = $self->_resolve_traits(@traits);
 
-        for my $trait (@traits){
-            $trait->meta->apply($self, rebless_params => $rebless_params || {});
+        $rebless_params ||= {};
+
+        $rebless_params->{_traits} = [ uniq @{ $self->_traits }, @traits ];
+        $rebless_params->{_resolved_traits} = [
+            uniq @{ $self->_resolved_traits }, @resolved_traits
+        ];
+
+        for my $trait (@resolved_traits){
+            $trait->meta->apply($self, rebless_params => $rebless_params);
         }
     }
 }
@@ -117,8 +145,8 @@ MooseX::Traits::Pluggable - an extension to MooseX::Traits
 
 See L<MooseX::Traits> for usage information.
 
-Adds support for class precedence search for traits and
-L</_original_class_name>, described below.
+Adds support for class precedence search for traits and some extra attributes,
+described below.
 
 =head1 TRAIT SEARCH
 
@@ -162,11 +190,21 @@ Example:
   $instance->does('Class1::Trait::Foo'); # true
   $instance->does('Class2::Trait::Bar'); # true
 
-=head1 _original_class_name
+=head1 EXTRA ATTRIBUTES
+
+=head2 _original_class_name
 
 When traits are applied to your class or instance, you get an anonymous class
 back whose name will be not the same as your original class. So C<ref $self>
 will not be C<Class>, but C<< $self->_original_class_name >> will be.
+
+=head2 _traits
+
+List of the (unresolved) traits applied to the instance.
+
+=head2 _resolved_traits
+
+List of traits applied to the instance resolved to full package names.
 
 =head1 AUTHOR
 

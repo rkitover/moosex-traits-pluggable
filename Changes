@@ -1,4 +1,7 @@
 Revision history for MooseX-Traits-Pluggable
 
+0.02  2009-06-02 09:57:57
+    - added _traits and _resolved_traits attributes
+
 0.01  2009-06-02 07:38:27
     - inital release

@@ -1,6 +1,6 @@
 use strict;
 use warnings;
-use Test::More tests => 31*2;
+use Test::More tests => 38*2;
 use Test::Exception;
 
 { package Trait;
@@ -69,6 +69,8 @@ for my $new_with_traits (@method) {
     is $instance->foo, 'hello';
     isnt ref($instance), 'Class';
     is $instance->_original_class_name, 'Class';
+    is_deeply $instance->_traits, ['Trait'];
+    is_deeply $instance->_resolved_traits, ['Trait'];
 }
 
 {
@@ -116,6 +118,17 @@ for my $new_with_traits (@method) {
     can_ok $instance, 'bar';
     is $instance->foo, 'foo';
     is $instance->bar, 'bar';
+    is_deeply $instance->_traits, ['Trait', '+Trait'];
+    is_deeply $instance->_resolved_traits, ['Another::Trait', 'Trait'];
+}
+{
+# Carp chokes here too
+    no warnings 'redefine';
+    local *Carp::caller_info = sub {};
+
+    throws_ok {
+        NS2->$new_with_traits(traits => ['NonExistant']);
+    } qr/Could not find a class/, 'unfindable trait throws exception';
 }
 {
     my $instance = NS2->$new_with_traits(
@@ -134,5 +147,8 @@ for my $new_with_traits (@method) {
     is $instance->foo, 'foo';
     is $instance->bar, 'bar';
     is $instance->baz, 'baz';
+    is_deeply $instance->_traits, ['+Trait', 'Foo', 'Bar'];
+    is_deeply $instance->_resolved_traits,
+        ['Trait', 'NS1::Trait::Foo', 'NS2::Trait::Bar'];
 }
 }

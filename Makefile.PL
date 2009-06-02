@@ -8,6 +8,8 @@ requires 'Moose';
 requires 'Moose::Role';
 requires 'MooseX::Traits';
 requires 'Scalar::Util';
+requires 'namespace::autoclean';
+requires 'List::MoreUtils';
 
 build_requires 'Test::Exception';
 build_requires 'Test::More';
