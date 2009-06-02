@@ -75,7 +75,7 @@ for my $new_with_traits (@method) {
 
 {
 # Carp chokes here
-    no warnings 'redefine';
+    local $SIG{__WARN__} = sub {};
     local *Carp::caller_info = sub {};
 
     throws_ok {
@@ -123,7 +123,7 @@ for my $new_with_traits (@method) {
 }
 {
 # Carp chokes here too
-    no warnings 'redefine';
+    local $SIG{__WARN__} = sub {};
     local *Carp::caller_info = sub {};
 
     throws_ok {

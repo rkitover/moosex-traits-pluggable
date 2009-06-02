@@ -8,7 +8,7 @@ use Carp;
 
 with 'MooseX::Traits' => { excludes => [qw/new_with_traits apply_traits/] };
 
-our $VERSION   = '0.02';
+our $VERSION   = '0.03';
 our $AUTHORITY = 'id:RKITOVER';
 
 # stolen from MX::Object::Pluggable
