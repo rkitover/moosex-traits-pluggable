@@ -5,10 +5,11 @@ use Moose::Role;
 use Scalar::Util 'blessed';
 use List::MoreUtils 'uniq';
 use Carp;
+use Moose::Autobox;
 
 with 'MooseX::Traits' => { excludes => [qw/new_with_traits apply_traits/] };
 
-our $VERSION   = '0.03';
+our $VERSION   = '0.04';
 our $AUTHORITY = 'id:RKITOVER';
 
 # stolen from MX::Object::Pluggable
@@ -85,14 +86,15 @@ sub new_with_traits {
     $args{_original_class_name} = $class;
 
     if (my $traits = delete $args{traits}) {
-        if(@$traits){
-            $args{_traits} = $traits;
-            $traits = [$class->_resolve_traits(@$traits)];
-            $args{_resolved_traits} = $traits;
+        my @traits = $traits->flatten;
+        if(@traits){
+            $args{_traits} = \@traits;
+            my @resolved_traits = $class->_resolve_traits(@traits);
+            $args{_resolved_traits} = \@resolved_traits;
 
             my $meta = $class->meta->create_anon_class(
                 superclasses => [ $class->meta->name ],
-                roles        => $traits,
+                roles        => \@resolved_traits,
                 cache        => 1,
             );
 
@@ -111,9 +113,7 @@ sub new_with_traits {
 sub apply_traits {
     my ($self, $traits, $rebless_params) = @_;
 
-    # arrayify
-    my @traits = $traits;
-    @traits = @$traits if ref $traits;
+    my @traits = $traits->flatten;
 
     if (@traits) {
         my @resolved_traits = $self->_resolve_traits(@traits);
