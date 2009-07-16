@@ -6,10 +6,11 @@ use Scalar::Util 'blessed';
 use List::MoreUtils 'uniq';
 use Carp;
 use Moose::Autobox;
+use Moose::Util qw/find_meta/;
 
 with 'MooseX::Traits' => { excludes => [qw/new_with_traits apply_traits/] };
 
-our $VERSION   = '0.04';
+our $VERSION   = '0.05';
 our $AUTHORITY = 'id:RKITOVER';
 
 # stolen from MX::Object::Pluggable
@@ -97,6 +98,10 @@ sub new_with_traits {
                 roles        => \@resolved_traits,
                 cache        => 1,
             );
+            # Method attributes in inherited roles may have turned metaclass
+            # to lies. CatalystX::Component::Traits related special move
+            # to deal with this here.
+            $meta = find_meta($meta->name);
 
             $meta->add_method('meta' => sub { $meta });
             $class = $meta->name;
