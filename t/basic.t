@@ -26,7 +26,7 @@ use Test::Exception;
   package Another::Class;
   use Moose;
   with 'MooseX::Traits::Pluggable';
-  has '+_trait_namespace' => ( is => 'ro', default => 'Another' );
+  has '+_trait_namespace' => ( default => 'Another' );
 
   package NS1;
   use Moose;
@@ -39,7 +39,7 @@ use Test::Exception;
   use Moose;
   use base 'NS1';
   with 'MooseX::Traits::Pluggable';
-  has '+_trait_namespace' => ( is => 'ro', default => '+Trait' );
+  has '+_trait_namespace' => ( default => '+Trait' );
 
   package NS2::Trait::Bar;
   use Moose::Role;
