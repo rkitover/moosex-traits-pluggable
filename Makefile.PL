@@ -24,4 +24,8 @@ author_tests 't/author';
 
 auto_provides;
 auto_install;
+
+resources repository =>
+    'git://github.com/rkitover/moosex-traits-pluggable.git';
+
 WriteAll();
