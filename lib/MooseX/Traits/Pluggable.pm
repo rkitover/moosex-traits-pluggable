@@ -10,7 +10,7 @@ use Moose::Util qw/find_meta/;
 
 with 'MooseX::Traits' => { excludes => [qw/new_with_traits apply_traits/] };
 
-our $VERSION   = '0.05';
+our $VERSION   = '0.06';
 our $AUTHORITY = 'id:RKITOVER';
 
 # stolen from MX::Object::Pluggable
