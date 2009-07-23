@@ -2,15 +2,13 @@ package MooseX::Traits::Pluggable;
 
 use namespace::autoclean;
 use Moose::Role;
-use Scalar::Util 'blessed';
+use Scalar::Util qw/blessed reftype/;
 use List::MoreUtils 'uniq';
 use Carp;
 use Moose::Autobox;
 use Moose::Util qw/find_meta/;
 
-with 'MooseX::Traits' => { excludes => [qw/new_with_traits apply_traits/] };
-
-our $VERSION   = '0.06';
+our $VERSION   = '0.07';
 our $AUTHORITY = 'id:RKITOVER';
 
 # stolen from MX::Object::Pluggable
@@ -19,6 +17,12 @@ has _original_class_name => (
   required => 1,
   isa => 'Str',
   default => sub { blessed $_[0] },
+);
+
+has '_trait_namespace' => (
+  # no accessors or init_arg
+  init_arg => undef,
+  (Moose->VERSION >= 0.84 ) ? (is => 'bare') : (),
 );
 
 has _traits => (
@@ -50,17 +54,29 @@ sub _transform_trait {
     my ($class, $name) = @_;
     my $namespace = $class->meta->find_attribute_by_name('_trait_namespace');
     my $base;
-    if($namespace->has_default){
+    if($namespace->has_default) {
         $base = $namespace->default;
-        if(ref $base eq 'CODE'){
+        if (ref($base) && reftype($base) eq 'CODE') {
             $base = $base->();
         }
     }
 
     return $name unless $base;
     return $1 if $name =~ /^[+](.+)$/;
-    return $class->_find_trait($1, $name) if $base =~ /^\+(.*)/;
-    return join '::', $base, $name;
+
+    $base = [ $base ] if !ref($base) || reftype($base) ne 'ARRAY';
+
+    for my $ns (@$base) {
+        if ($ns =~ /^\+(.*)/) {
+            my $trait = eval { $class->_find_trait($1, $name) };
+            return $trait if defined $trait;
+        }
+
+        my $trait = join '::', $ns, $name;
+        return $trait if eval { Class::MOP::load_class($trait) };
+    }
+
+    croak "Could not find a class for trait: $name";
 }
 
 sub _resolve_traits {
@@ -195,6 +211,17 @@ Example:
 
   $instance->does('Class1::Trait::Foo'); # true
   $instance->does('Class2::Trait::Bar'); # true
+
+=head1 NAMESPACE ARRAYS
+
+You can search multiple namespaces for traits, for example:
+
+  has '+_trait_namespace' => (
+      default => sub { [qw/+Trait +Role ExtraNS::Trait/] }
+  );
+
+Will search in the C<class_precedence_list> for C<::Trait::TheTrait>
+and C<::Role::TheTrait> and then for C<ExtraNS::Trait::TheTrait>.
 
 =head1 EXTRA ATTRIBUTES
 
