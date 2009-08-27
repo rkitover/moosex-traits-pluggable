@@ -15,7 +15,6 @@ requires 'MooseX::Traits' => '0.06';
 requires 'Scalar::Util';
 requires 'namespace::autoclean';
 requires 'List::MoreUtils';
-requires 'Moose::Autobox';
 
 build_requires 'Test::Exception';
 build_requires 'Test::More';
