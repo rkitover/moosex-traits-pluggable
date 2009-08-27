@@ -7,7 +7,7 @@ use List::MoreUtils 'uniq';
 use Carp;
 use Moose::Util qw/find_meta/;
 
-our $VERSION   = '0.07';
+our $VERSION   = '0.08';
 our $AUTHORITY = 'id:RKITOVER';
 
 # stolen from MX::Object::Pluggable

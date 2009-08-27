@@ -1,5 +1,9 @@
 Revision history for MooseX-Traits-Pluggable
 
+0.08  2009-08-27 01:08:50
+   - Remove use of Moose::Autobox as it fails on some platforms
+     (notably, Activestate have bad PPMs)
+
 0.07  2009-07-23 20:38:37
    - added support for _trait_namespace arrays
 
