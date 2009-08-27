@@ -1,5 +1,8 @@
 Revision history for MooseX-Traits-Pluggable
 
+0.07  2009-07-23 20:38:37
+   - added support for _trait_namespace arrays
+
 0.06  2009-07-17 23:33:00
    - Work correctly with positional parameters followed by a hashref
      passed to new_with_traits.

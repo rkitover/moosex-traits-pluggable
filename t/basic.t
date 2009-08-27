@@ -1,6 +1,6 @@
 use strict;
 use warnings;
-use Test::More tests => 38*2;
+use Test::More tests => 42*2;
 use Test::Exception;
 
 { package Trait;
@@ -39,11 +39,17 @@ use Test::Exception;
   use Moose;
   use base 'NS1';
   with 'MooseX::Traits::Pluggable';
-  has '+_trait_namespace' => ( default => '+Trait' );
+  has '+_trait_namespace' => (
+      default => sub { [qw/+Trait ExtraNS::Trait/] }
+  );
 
   package NS2::Trait::Bar;
   use Moose::Role;
   has 'baz' => (is => 'ro', required => 1);
+
+  package ExtraNS::Trait::Extra;
+  use Moose::Role;
+  has 'extra' => (is => 'ro', required => 1);
 }
 
 my @method = (
@@ -132,23 +138,28 @@ for my $new_with_traits (@method) {
 }
 {
     my $instance = NS2->$new_with_traits(
-        traits   => ['+Trait', 'Foo', 'Bar'],
+        traits   => ['+Trait', 'Foo', 'Bar', 'Extra'],
         foo      => 'foo',
         bar      => 'bar',
         baz      => 'baz',
+        extra    => 'extra',
     );
     isa_ok $instance, 'NS2';
     isa_ok $instance, 'NS1';
+    ok $instance->meta->does_role('Trait');
     ok $instance->meta->does_role('NS1::Trait::Foo');
     ok $instance->meta->does_role('NS2::Trait::Bar');
+    ok $instance->meta->does_role('ExtraNS::Trait::Extra');
     can_ok $instance, 'foo';
     can_ok $instance, 'bar';
     can_ok $instance, 'baz';
+    can_ok $instance, 'extra';
     is $instance->foo, 'foo';
     is $instance->bar, 'bar';
     is $instance->baz, 'baz';
-    is_deeply $instance->_traits, ['+Trait', 'Foo', 'Bar'];
+    is $instance->extra, 'extra';
+    is_deeply $instance->_traits, ['+Trait', 'Foo', 'Bar', 'Extra'];
     is_deeply $instance->_resolved_traits,
-        ['Trait', 'NS1::Trait::Foo', 'NS2::Trait::Bar'];
+        ['Trait', 'NS1::Trait::Foo', 'NS2::Trait::Bar', 'ExtraNS::Trait::Extra'];
 }
 }

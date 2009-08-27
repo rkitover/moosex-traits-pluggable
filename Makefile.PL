@@ -11,7 +11,6 @@ BEGIN {
 requires 'Class::MOP' => '0.84';
 requires 'Moose';
 requires 'Moose::Role';
-requires 'MooseX::Traits' => '0.06';
 requires 'Scalar::Util';
 requires 'namespace::autoclean';
 requires 'List::MoreUtils';
