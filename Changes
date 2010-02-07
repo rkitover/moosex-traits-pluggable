@@ -1,5 +1,8 @@
 Revision history for MooseX-Traits-Pluggable
 
+0.09  2010-02-07 00:59:59
+    - update POD
+
 0.08  2009-08-27 01:08:50
    - Remove use of Moose::Autobox as it fails on some platforms
      (notably, Activestate have bad PPMs)

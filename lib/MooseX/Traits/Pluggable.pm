@@ -7,7 +7,7 @@ use List::MoreUtils 'uniq';
 use Carp;
 use Moose::Util qw/find_meta/;
 
-our $VERSION   = '0.08';
+our $VERSION   = '0.09';
 our $AUTHORITY = 'id:RKITOVER';
 
 # stolen from MX::Object::Pluggable
@@ -160,11 +160,14 @@ __END__
 
 =head1 NAME
 
-MooseX::Traits::Pluggable - an extension to MooseX::Traits
+MooseX::Traits::Pluggable - trait loading and resolution for Moose
 
 =head1 DESCRIPTION
 
 See L<MooseX::Traits> for usage information.
+
+Use C<new_with_traits> to construct an object with a list of traits and
+C<apply_traits> to apply traits to an instance.
 
 Adds support for class precedence search for traits and some extra attributes,
 described below.
@@ -238,21 +241,55 @@ List of the (unresolved) traits applied to the instance.
 
 List of traits applied to the instance resolved to full package names.
 
+=head1 SEE ALSO
+
+L<MooseX::Traits>, L<MooseX::Object::Pluggable>
+
+=head1 BUGS
+
+Please report any bugs or feature requests to C<bug-moosex-traits-pluggable at
+rt.cpan.org>, or through the web interface at
+L<http://rt.cpan.org/NoAuth/ReportBug.html?Queue=MooseX-Traits-Pluggable>.  I
+will be notified, and then you'll automatically be notified of progress on your
+bug as I make changes.
+
+=head1 SUPPORT
+
+More information at:
+
+=over 4
+
+=item * RT: CPAN's request tracker
+
+L<http://rt.cpan.org/NoAuth/Bugs.html?Dist=MooseX-Traits-Pluggable>
+
+=item * AnnoCPAN: Annotated CPAN documentation
+
+L<http://annocpan.org/dist/MooseX-Traits-Pluggable>
+
+=item * CPAN Ratings
+
+L<http://cpanratings.perl.org/d/MooseX-Traits-Pluggable>
+
+=item * Search CPAN
+
+L<http://search.cpan.org/dist/MooseX-Traits-Pluggable/>
+
+=back
+
 =head1 AUTHOR
 
 Rafael Kitover C<< <rkitover@cpan.org> >>
 
-Don't email these guys, they had nothing to do with this fork:
+=head1 CONTRIBUTORS
 
-Jonathan Rockway C<< <jrockway@cpan.org> >>
+Tomas Doran, C<< <bobtfish@bobtfish.net> >>
 
-Stevan Little C<< <stevan.little@iinteractive.com> >>
+=head1 COPYRIGHT & LICENSE
 
-=head1 COPYRIGHT AND LICENSE
-
-Copyright 2008 Infinity Interactive, Inc.
-
-L<http://www.iinteractive.com>
+Copyright (c) 2009 - 2010 by the aforementioned
+L<DBIx::Class::Schema::Loader/AUTHOR> and
+L<DBIx::Class::Schema::Loader/CONTRIBUTORS>.
 
 This library is free software; you can redistribute it and/or modify
 it under the same terms as Perl itself.
