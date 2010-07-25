@@ -296,8 +296,7 @@ Tomas Doran, C<< <bobtfish@bobtfish.net> >>
 =head1 COPYRIGHT & LICENSE
 
 Copyright (c) 2009 - 2010 by the aforementioned
-L<DBIx::Class::Schema::Loader/AUTHOR> and
-L<DBIx::Class::Schema::Loader/CONTRIBUTORS>.
+L</AUTHOR> and L</CONTRIBUTORS>.
 
 This library is free software; you can redistribute it and/or modify
 it under the same terms as Perl itself.
