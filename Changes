@@ -1,5 +1,8 @@
 Revision history for MooseX-Traits-Pluggable
 
+0.10  2010-07-25 08:44:14
+    - better support for factory classes
+
 0.09  2010-02-07 00:59:59
     - update POD
 

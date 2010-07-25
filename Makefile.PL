@@ -3,6 +3,7 @@ use inc::Module::Install;
 name 'MooseX-Traits-Pluggable';
 all_from 'lib/MooseX/Traits/Pluggable.pm';
 
+require Module::Install::ReadmeFromPod;
 BEGIN {
     require Module::Install::AuthorTests
         if $Module::Install::AUTHOR;
@@ -25,5 +26,9 @@ auto_install;
 
 resources repository =>
     'git://github.com/rkitover/moosex-traits-pluggable.git';
+
+readme_from 'lib/MooseX/Traits/Pluggable.pm';
+
+realclean_files qw[MANIFEST README];
 
 WriteAll();
