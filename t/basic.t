@@ -10,10 +10,17 @@ use Test::Exception;
       isa      => 'Str',
       required => 1,
   );
+  sub bar {
+      return 'Trait::bar';
+  }
 
   package Class;
   use Moose;
   with 'MooseX::Traits::Pluggable';
+
+  sub bar {
+      return 'Class::bar';
+  }
 
   package Another::Trait;
   use Moose::Role;
@@ -77,6 +84,8 @@ for my $new_with_traits (@method) {
     is $instance->_original_class_name, 'Class';
     is_deeply $instance->_traits, ['Trait'];
     is_deeply $instance->_resolved_traits, ['Trait'];
+    is $instance->bar, 'Class::bar',
+        "sub in consuming class doesn't get overriden by sub from role";
 }
 
 {
