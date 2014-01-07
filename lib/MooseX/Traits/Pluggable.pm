@@ -6,6 +6,8 @@ use Scalar::Util qw/blessed reftype/;
 use List::MoreUtils 'uniq';
 use Carp;
 use Moose::Util qw/find_meta/;
+use Class::Load qw();
+
 
 our $VERSION   = '0.10';
 our $AUTHORITY = 'id:RKITOVER';
@@ -43,7 +45,7 @@ sub _find_trait {
 
     for my $ns (@search_ns) {
         my $full = "${ns}::${base}::${name}";
-        return $full if eval { Class::MOP::load_class($full) };
+        return $full if eval { Class::Load::load_class($full) };
     }
 
     croak "Could not find a class for trait: $name";
@@ -76,7 +78,7 @@ sub _transform_trait {
         }
 
         my $trait = join '::', $ns, $name;
-        return $trait if eval { Class::MOP::load_class($trait) };
+        return $trait if eval { Class::Load::load_class($trait) };
     }
 
     croak "Could not find a class for trait: $name";
@@ -87,7 +89,7 @@ sub _resolve_traits {
 
     return map {
         my $transformed = $class->_transform_trait($_);
-        Class::MOP::load_class($transformed);
+        Class::Load::load_class($transformed);
         $transformed;
     } @traits;
 }
