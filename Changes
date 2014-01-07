@@ -1,4 +1,6 @@
-Revision history for MooseX-Traits-Pluggable
+Revision history for MooseX::Traits::Pluggable
+
+{{$NEXT}}
 
 0.10  2010-07-25 08:44:14
     - better support for factory classes

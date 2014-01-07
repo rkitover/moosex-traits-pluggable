@@ -1,6 +1,6 @@
 use strict;
 use warnings;
-use Test::More tests => 42*2;
+use Test::More tests => 43*2;
 use Test::Exception;
 
 { package Trait;
@@ -10,16 +10,17 @@ use Test::Exception;
       isa      => 'Str',
       required => 1,
   );
-  sub bar {
-      return 'Trait::bar';
+  sub test_method {
+      return 'Trait::test_method';
   }
 
   package Class;
   use Moose;
   with 'MooseX::Traits::Pluggable';
+  has '+_traits_behave_like_roles' => (default => 1);
 
-  sub bar {
-      return 'Class::bar';
+  sub test_method {
+      return 'Class::test_method';
   }
 
   package Another::Trait;
@@ -84,7 +85,7 @@ for my $new_with_traits (@method) {
     is $instance->_original_class_name, 'Class';
     is_deeply $instance->_traits, ['Trait'];
     is_deeply $instance->_resolved_traits, ['Trait'];
-    is $instance->bar, 'Class::bar',
+    is $instance->test_method, 'Class::test_method',
         "sub in consuming class doesn't get overriden by sub from role";
 }
 
