@@ -1,6 +1,10 @@
 Revision history for MooseX::Traits::Pluggable
 
 {{$NEXT}}
+    - add +_traits_behave_like_roles config attribute which prevents roles from
+      overriding class methods, matching the behavior of regular Moose roles
+    - remove Class::MOP::load_class and use Class::Load due to deprecation
+      warning
 
 0.10  2010-07-25 08:44:14
     - better support for factory classes
