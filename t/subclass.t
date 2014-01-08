@@ -3,15 +3,15 @@ use warnings;
 use Test::More tests => 3;
 use Test::Exception;
 
-{ package Foo;
+{ package t::Foo;
   use Moose;
   with 'MooseX::Traits::Pluggable';
 
-  package Bar;
+  package t::Bar;
   use Moose;
-  extends 'Foo';
+  extends 't::Foo';
 
-  package Trait;
+  package t::Trait;
   use Moose::Role;
 
   sub foo { return 42 };
@@ -19,8 +19,8 @@ use Test::Exception;
 
 my $instance;
 lives_ok {
-    $instance = Bar->new_with_traits( traits => ['Trait'] );
+    $instance = t::Bar->new_with_traits( traits => ['t::Trait'] );
 } 'creating instance works ok';
 
-ok $instance->does('Trait'), 'instance does trait';
+ok $instance->does('t::Trait'), 'instance does trait';
 is $instance->foo, 42, 'trait works';
