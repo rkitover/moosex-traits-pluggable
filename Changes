@@ -1,6 +1,7 @@
 Revision history for MooseX::Traits::Pluggable
 
 {{$NEXT}}
+    - fix bogus prereqs, PR from felliott (Fitz Elliott)
 
 0.11 2014-01-07 16:04:55
     - add +_traits_behave_like_roles config attribute which prevents roles from

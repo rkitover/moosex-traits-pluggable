@@ -332,6 +332,9 @@ Rafael Kitover C<< <rkitover@cpan.org> >>
 =head1 CONTRIBUTORS
 
 Tomas Doran, C<< <bobtfish@bobtfish.net> >>
+Fitz Elliott, C<< <fitz.elliott@gmail.com> >>
+Andreas Marienborg, C<< <andreas.marienborg@gmail.com> >>
+Alexander Hartmaier, C<< <abraxxa@cpan.org> >>
 
 =head1 COPYRIGHT & LICENSE
 
