@@ -3,7 +3,7 @@ use warnings;
 use Test::More tests => 43*2;
 use Test::Exception;
 
-{ package Trait;
+{ package t::Trait;
   use Moose::Role;
   has 'foo' => (
       is       => 'ro',
@@ -11,19 +11,19 @@ use Test::Exception;
       required => 1,
   );
   sub test_method {
-      return 'Trait::test_method';
+      return 't::Trait::test_method';
   }
 
-  package Class;
+  package t::Class;
   use Moose;
   with 'MooseX::Traits::Pluggable';
   has '+_traits_behave_like_roles' => (default => 1);
 
   sub test_method {
-      return 'Class::test_method';
+      return 't::Class::test_method';
   }
 
-  package Another::Trait;
+  package t::Another::t::Trait;
   use Moose::Role;
   has 'bar' => (
       is       => 'ro',
@@ -31,31 +31,31 @@ use Test::Exception;
       required => 1,
   );
 
-  package Another::Class;
+  package t::Another::Class;
   use Moose;
   with 'MooseX::Traits::Pluggable';
-  has '+_trait_namespace' => ( default => 'Another' );
+  has '+_trait_namespace' => ( default => 't::Another' );
 
-  package NS1;
+  package t::NS1;
   use Moose;
 
-  package NS1::Trait::Foo;
+  package t::NS1::Trait::t::Foo;
   use Moose::Role;
   has 'bar' => (is => 'ro', required => 1);
 
-  package NS2;
+  package t::NS2;
   use Moose;
-  use base 'NS1';
+  use base 't::NS1';
   with 'MooseX::Traits::Pluggable';
   has '+_trait_namespace' => (
-      default => sub { [qw/+Trait ExtraNS::Trait/] }
+      default => sub { [qw/+Trait t::ExtraNS::Trait/] }
   );
 
-  package NS2::Trait::Bar;
+  package t::NS2::Trait::t::Bar;
   use Moose::Role;
   has 'baz' => (is => 'ro', required => 1);
 
-  package ExtraNS::Trait::Extra;
+  package t::ExtraNS::Trait::t::Extra;
   use Moose::Role;
   has 'extra' => (is => 'ro', required => 1);
 }
@@ -77,15 +77,15 @@ my @method = (
 
 for my $new_with_traits (@method) {
 {
-    my $instance = Class->$new_with_traits( traits => ['Trait'], foo => 'hello' );
-    isa_ok $instance, 'Class';
+    my $instance = t::Class->$new_with_traits( traits => ['t::Trait'], foo => 'hello' );
+    isa_ok $instance, 't::Class';
     can_ok $instance, 'foo';
     is $instance->foo, 'hello';
-    isnt ref($instance), 'Class';
-    is $instance->_original_class_name, 'Class';
-    is_deeply $instance->_traits, ['Trait'];
-    is_deeply $instance->_resolved_traits, ['Trait'];
-    is $instance->test_method, 'Class::test_method',
+    isnt ref($instance), 't::Class';
+    is $instance->_original_class_name, 't::Class';
+    is_deeply $instance->_traits, ['t::Trait'];
+    is_deeply $instance->_resolved_traits, ['t::Trait'];
+    is $instance->test_method, 't::Class::test_method',
         "sub in consuming class doesn't get overriden by sub from role";
 }
 
@@ -95,47 +95,47 @@ for my $new_with_traits (@method) {
     local *Carp::caller_info = sub {};
 
     throws_ok {
-        Class->$new_with_traits( traits => ['Trait'] );
+        t::Class->$new_with_traits( traits => ['t::Trait'] );
     } qr/required/, 'foo is required';
 }
 
 {
-    my $instance = Class->$new_with_traits;
-    isa_ok $instance, 'Class';
+    my $instance = t::Class->$new_with_traits;
+    isa_ok $instance, 't::Class';
     ok !$instance->can('foo'), 'this one cannot foo';
 }
 {
-    my $instance = Class->$new_with_traits( traits => [] );
-    isa_ok $instance, 'Class';
+    my $instance = t::Class->$new_with_traits( traits => [] );
+    isa_ok $instance, 't::Class';
     ok !$instance->can('foo'), 'this one cannot foo either';
 }
 {
-    my $instance = Another::Class->$new_with_traits( traits => ['Trait'], bar => 'bar' );
-    isa_ok $instance, 'Another::Class';
+    my $instance = t::Another::Class->$new_with_traits( traits => ['t::Trait'], bar => 'bar' );
+    isa_ok $instance, 't::Another::Class';
     can_ok $instance, 'bar';
     is $instance->bar, 'bar';
 }
 # try hashref form
 {
-    my $instance = Another::Class->$new_with_traits({ traits => ['Trait'], bar => 'bar' });
-    isa_ok $instance, 'Another::Class';
+    my $instance = t::Another::Class->$new_with_traits({ traits => ['t::Trait'], bar => 'bar' });
+    isa_ok $instance, 't::Another::Class';
     can_ok $instance, 'bar';
     is $instance->bar, 'bar';
 }
 
 {
-    my $instance = Another::Class->$new_with_traits(
-        traits   => ['Trait', '+Trait'],
+    my $instance = t::Another::Class->$new_with_traits(
+        traits   => ['t::Trait', '+t::Trait'],
         foo      => 'foo',
         bar      => 'bar',
     );
-    isa_ok $instance, 'Another::Class';
+    isa_ok $instance, 't::Another::Class';
     can_ok $instance, 'foo';
     can_ok $instance, 'bar';
     is $instance->foo, 'foo';
     is $instance->bar, 'bar';
-    is_deeply $instance->_traits, ['Trait', '+Trait'];
-    is_deeply $instance->_resolved_traits, ['Another::Trait', 'Trait'];
+    is_deeply $instance->_traits, ['t::Trait', '+t::Trait'];
+    is_deeply $instance->_resolved_traits, ['t::Another::t::Trait', 't::Trait'];
 }
 {
 # Carp chokes here too
@@ -143,23 +143,23 @@ for my $new_with_traits (@method) {
     local *Carp::caller_info = sub {};
 
     throws_ok {
-        NS2->$new_with_traits(traits => ['NonExistant']);
+        t::NS2->$new_with_traits(traits => ['NonExistant']);
     } qr/Could not find a class/, 'unfindable trait throws exception';
 }
 {
-    my $instance = NS2->$new_with_traits(
-        traits   => ['+Trait', 'Foo', 'Bar', 'Extra'],
+    my $instance = t::NS2->$new_with_traits(
+        traits   => ['+t::Trait', 't::Foo', 't::Bar', 't::Extra'],
         foo      => 'foo',
         bar      => 'bar',
         baz      => 'baz',
         extra    => 'extra',
     );
-    isa_ok $instance, 'NS2';
-    isa_ok $instance, 'NS1';
-    ok $instance->meta->does_role('Trait');
-    ok $instance->meta->does_role('NS1::Trait::Foo');
-    ok $instance->meta->does_role('NS2::Trait::Bar');
-    ok $instance->meta->does_role('ExtraNS::Trait::Extra');
+    isa_ok $instance, 't::NS2';
+    isa_ok $instance, 't::NS1';
+    ok $instance->meta->does_role('t::Trait');
+    ok $instance->meta->does_role('t::NS1::Trait::t::Foo');
+    ok $instance->meta->does_role('t::NS2::Trait::t::Bar');
+    ok $instance->meta->does_role('t::ExtraNS::Trait::t::Extra');
     can_ok $instance, 'foo';
     can_ok $instance, 'bar';
     can_ok $instance, 'baz';
@@ -168,8 +168,8 @@ for my $new_with_traits (@method) {
     is $instance->bar, 'bar';
     is $instance->baz, 'baz';
     is $instance->extra, 'extra';
-    is_deeply $instance->_traits, ['+Trait', 'Foo', 'Bar', 'Extra'];
+    is_deeply $instance->_traits, ['+t::Trait', 't::Foo', 't::Bar', 't::Extra'];
     is_deeply $instance->_resolved_traits,
-        ['Trait', 'NS1::Trait::Foo', 'NS2::Trait::Bar', 'ExtraNS::Trait::Extra'];
+        ['t::Trait', 't::NS1::Trait::t::Foo', 't::NS2::Trait::t::Bar', 't::ExtraNS::Trait::t::Extra'];
 }
 }

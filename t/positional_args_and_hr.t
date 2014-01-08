@@ -3,7 +3,7 @@ use warnings;
 use Test::More tests => 2;
 
 {
-    package Trait;
+    package t::Trait;
     use Moose::Role;
     has 'foo' => (
         is       => 'ro',
@@ -11,17 +11,17 @@ use Test::More tests => 2;
         required => 1,
     );
 
-    package Parent;
+    package t::Parent;
     use Moose;
 
     sub BUILDARGS {
         pop(@_);
     }
 
-    package Class;
+    package t::Class;
     use Moose;
     use Test::More;
-    extends 'Parent';
+    extends 't::Parent';
     with 'MooseX::Traits::Pluggable';
     override BUILDARGS => sub {
         my ($self, $param1) = @_;
@@ -30,8 +30,8 @@ use Test::More tests => 2;
     };
 }
 
-my $i = Class->new_with_traits('Positional value',
-    { foo => 'bar', traits => 'Trait' }
+my $i = t::Class->new_with_traits('Positional value',
+    { foo => 'bar', traits => 't::Trait' }
 );
 is $i->foo, 'bar', 'Normal args work';
 
