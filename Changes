@@ -1,6 +1,8 @@
 Revision history for MooseX::Traits::Pluggable
 
 {{$NEXT}}
+
+0.12 2014-01-11 15:52:52
     - fix bogus prereqs, PR from felliott (Fitz Elliott)
 
 0.11 2014-01-07 16:04:55
